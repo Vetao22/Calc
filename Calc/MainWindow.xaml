@@ -5,8 +5,122 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:Calc"
         mc:Ignorable="d"
-        Title="MainWindow" Height="450" Width="800">
-    <Grid>
+        Title="MainWindow" Height="451.5" Width="363" Visibility="Visible" WindowStartupLocation="CenterScreen"
+        FontSize="15" FontWeight="Bold">
+
+    <Window.Resources>
+
+    </Window.Resources>
+    
+    <Grid Height="auto">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="auto"/>
+            <RowDefinition Height="*"/>
+
+        </Grid.RowDefinitions>
+
+        <!--Menu Grid, defining sub menus to choose what type of calculator to use.-->
+        <Menu Grid.Row="0" Background="{x:Null}">
+            <Menu.Items>
+                <MenuItem Header="Type">
+                    <MenuItem Header="Default"/>
+                    <MenuItem Header="Scientific"/>
+                </MenuItem>
+            </Menu.Items>
+        </Menu>
         
+        <!---->
+        <TextBox Grid.Row="1" Width="auto" Margin="5" MinHeight="20" Text="111">
+            <TextBox.Template>
+                <ControlTemplate>
+                    <Border CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}"
+                            Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" BorderBrush="AliceBlue">
+                        <TextBlock Text="{TemplateBinding TextBox.Text}"/>
+                    </Border>
+                </ControlTemplate>
+            </TextBox.Template>
+        </TextBox>
+      
+        <!--First line of buttons, including memory function.-->
+        <Grid Grid.Row="2" Margin="4">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <Button Grid.Column="0" Content="MC" Margin="2, 3" IsEnabled="False"/>
+            <Button Grid.Column="1" Content="MR" Margin="2, 3" IsEnabled="False"/>
+            <Button Grid.Column="2" Content="M+" Margin="2, 3"/>
+            <Button Grid.Column="3" Content="M-" Margin="2, 3"/>
+            <Button Grid.Column="4" Content="MS" Margin="2, 3"/>
+        </Grid>
+
+        <Grid Grid.Row="3">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+
+            <!--Second line of buttons-->
+            <Button Grid.Column="0" Grid.Row="0" Content="%" />
+            <Button Grid.Column="1" Grid.Row="0">
+                <Grid>
+                    <TextBlock Text="‾‾" Margin="10 0 0 0"/>
+                    <TextBlock Text="²√x"/>
+                </Grid>
+            </Button>
+            <Button Grid.Column="2" Grid.Row="0" Content="X²"/>
+            <Button Grid.Column="3" Grid.Row="0">
+                <Grid>
+                    <TextBlock Text="1" Margin="-5 -3 0 0"/>
+                    <TextBlock Text="/"/>
+                    <TextBlock Text="X" Margin="3 5 0 0"/>
+                </Grid>
+            </Button>
+
+            <!--Third line of buttons-->
+            <Button Grid.Column="0" Grid.Row="1" Content="CE"/>
+            <Button Grid.Column="1" Grid.Row="1" Content="C" />
+            <Button Grid.Column="2" Grid.Row="1" Content="⌫"/>
+            <Button Grid.Column="3" Grid.Row="1" Content="÷"/>
+            <!--Fourth line of buttons-->
+            <Button Grid.Column="0" Grid.Row="2" Content="7"/>
+            <Button Grid.Column="1" Grid.Row="2" Content="8"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="9"/>
+            <Button Grid.Column="3" Grid.Row="2" Content="X"/>
+
+            <!--Fifth line of buttons-->
+            <Button Grid.Column="0" Grid.Row="3" Content="4"/>
+            <Button Grid.Column="1" Grid.Row="3" Content="5"/>
+            <Button Grid.Column="2" Grid.Row="3" Content="6"/>
+            <Button Grid.Column="3" Grid.Row="3" Content="-"/>
+
+            <!--Sixth line of buttons-->
+            <Button Grid.Column="0" Grid.Row="4" Content="1"/>
+            <Button Grid.Column="1" Grid.Row="4" Content="2"/>
+            <Button Grid.Column="2" Grid.Row="4" Content="3"/>
+            <Button Grid.Column="3" Grid.Row="4" Content="+"/>
+
+            <!--Seventh line of buttons-->
+            <Button Grid.Column="0" Grid.Row="5" Content="+/-"/>
+            <Button Grid.Column="1" Grid.Row="5" Content="0"/>
+            <Button Grid.Column="2" Grid.Row="5" Content="."/>
+            <Button Grid.Column="3" Grid.Row="5" Content="="/>
+        </Grid>
     </Grid>
 </Window>
