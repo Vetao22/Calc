@@ -9,7 +9,9 @@ namespace Calc
     public class MathFunctions
     {
 
-        static double mem = 0;
+        static double mem = 0, lastResult = 0;
+        static string[] possibleOperations = { "+", "-", "*", "÷" };
+        
         /// <summary>
         /// Add a to b
         /// </summary>
@@ -59,7 +61,7 @@ namespace Calc
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public double Percent(double n)
+        public static double Percent(double n)
         {
             return n / 100;
         }
@@ -69,7 +71,7 @@ namespace Calc
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public double Sqrt(double n)
+        public static double Sqrt(double n)
         {
             if(n > 0)
             {
@@ -83,7 +85,7 @@ namespace Calc
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public double PowerOfTwo(double n)
+        public static double PowerOfTwo(double n)
         {
             if(n > 0)
             {
@@ -97,7 +99,7 @@ namespace Calc
         /// </summary>
         /// <param name="n"></param>
         /// <returns></returns>
-        public double OneDividedByN(double n)
+        public static double OneDividedByN(double n)
         {
             if(n > 0)
             {
@@ -139,6 +141,68 @@ namespace Calc
         public void MemClear()
         {
             Mem = 0;
+        }
+
+
+        public static void ClearResult()
+        {
+            lastResult = 0;
+        }
+
+        public static double ProcessResult(string equation)
+        {
+            List<char> ops = new List<char>();
+            string[] splits;
+            double tempRes = 0, value;
+
+            //Get the operations to execute
+            foreach(string op in possibleOperations)
+            {
+                for(int x = 0; x < equation.Length; x++)
+                {
+                    if(equation.ElementAt(x) == op.First())
+                    {
+                        ops.Add(op.First());
+                    }
+                }
+            }
+
+            //Separate the numbers
+            splits = equation.Split(ops.ToArray());
+
+            value = Convert.ToDouble(splits.First());            
+
+            //Set the first value to initiate the calculation
+            tempRes = value;
+
+            for(int x = 0; x < ops.Count; x++)
+            {
+                value = Convert.ToDouble(splits[x + 1]);
+
+                char op = ops[x];
+
+                switch(op)
+                {
+                    case '+':
+                        tempRes = Add(tempRes, value);
+                        break;
+
+                    case '-':
+                        tempRes = Sub(tempRes, value);
+                        break;
+
+                    case '*':
+                        tempRes = Multiply(tempRes, value);
+                        break;
+
+                    case '÷':
+                        tempRes = Divide(tempRes, value);
+                        break;
+                }
+
+            }
+
+            return lastResult = tempRes;
         }
     }
 }

@@ -9,7 +9,9 @@
         FontSize="15" FontWeight="Bold">
 
     <Window.Resources>
-
+        <Style x:Key="btnNumber" TargetType="Button">
+            <Setter Property="Background" Value="AntiqueWhite"/>
+        </Style>
     </Window.Resources>
     
     <Grid Height="auto">
@@ -32,12 +34,15 @@
         </Menu>
         
         <!---->
-        <TextBox Grid.Row="1" Width="auto" Margin="5" MinHeight="20" Text="111">
+        <TextBox Grid.Row="1" Width="auto" Margin="5" MinHeight="20" Name="txtEquation" PreviewTextInput="txtEquation_PreviewTextInput" 
+                 PreviewLostKeyboardFocus="txtEquation_PreviewLostKeyboardFocus"
+                 KeyUp="txtEquation_KeyUp">
             <TextBox.Template>
                 <ControlTemplate>
                     <Border CornerRadius="2" BorderThickness="{TemplateBinding BorderThickness}"
                             Width="{TemplateBinding Width}" Height="{TemplateBinding Height}" BorderBrush="AliceBlue">
-                        <TextBlock Text="{TemplateBinding TextBox.Text}"/>
+                        <TextBlock Text="{TemplateBinding TextBox.Text}" 
+                                   HorizontalAlignment="Right"/>
                     </Border>
                 </ControlTemplate>
             </TextBox.Template>
@@ -77,15 +82,15 @@
             </Grid.RowDefinitions>
 
             <!--Second line of buttons-->
-            <Button Grid.Column="0" Grid.Row="0" Content="%" />
-            <Button Grid.Column="1" Grid.Row="0">
+            <Button Name="btnPercent" Grid.Column="0" Grid.Row="0" Content="%" Click="btnPercent_Click" />
+            <Button  Name="btnSqrt" Grid.Column="1" Grid.Row="0" Click="btnSqrt_Click">
                 <Grid>
                     <TextBlock Text="‾‾" Margin="10 0 0 0"/>
                     <TextBlock Text="²√x"/>
                 </Grid>
             </Button>
-            <Button Grid.Column="2" Grid.Row="0" Content="X²"/>
-            <Button Grid.Column="3" Grid.Row="0">
+            <Button Name="btnPowerOfTwo" Grid.Column="2" Grid.Row="0" Content="X²" Click="btnPowerOfTwo_Click" />
+            <Button Name="btnOneDivideByX" Grid.Column="3" Grid.Row="0" Click="btnOneDivideByX_Click">
                 <Grid>
                     <TextBlock Text="1" Margin="-5 -3 0 0"/>
                     <TextBlock Text="/"/>
@@ -94,33 +99,33 @@
             </Button>
 
             <!--Third line of buttons-->
-            <Button Grid.Column="0" Grid.Row="1" Content="CE"/>
-            <Button Grid.Column="1" Grid.Row="1" Content="C" />
-            <Button Grid.Column="2" Grid.Row="1" Content="⌫"/>
-            <Button Grid.Column="3" Grid.Row="1" Content="÷"/>
+            <Button Name="btnClearEntry" Grid.Column="0" Grid.Row="1" Content="CE" Click="btnClearEntry_Click"/>
+            <Button Name="btnClear" Grid.Column="1" Grid.Row="1" Content="C" Click="btnClear_Click" />
+            <Button Name="btnErase" Grid.Column="2" Grid.Row="1" Content="⌫" Click="btnErase_Click"/>
+            <Button Name="btnDivide" Grid.Column="3" Grid.Row="1" Content="÷" Click="btnDivide_Click"/>
             <!--Fourth line of buttons-->
-            <Button Grid.Column="0" Grid.Row="2" Content="7"/>
-            <Button Grid.Column="1" Grid.Row="2" Content="8"/>
-            <Button Grid.Column="2" Grid.Row="2" Content="9"/>
-            <Button Grid.Column="3" Grid.Row="2" Content="X"/>
+            <Button Grid.Column="0" Grid.Row="2" Content="7" Name="btn_7" Click="btn_7_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="1" Grid.Row="2" Content="8" Name="btn_8" Click="btn_8_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="9" Name="btn_9" Click="btn_9_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="2" Content="X" Name="btnMultiply" Click="btnMultiply_Click"/>
 
             <!--Fifth line of buttons-->
-            <Button Grid.Column="0" Grid.Row="3" Content="4"/>
-            <Button Grid.Column="1" Grid.Row="3" Content="5"/>
-            <Button Grid.Column="2" Grid.Row="3" Content="6"/>
-            <Button Grid.Column="3" Grid.Row="3" Content="-"/>
+            <Button Grid.Column="0" Grid.Row="3" Content="4" Name="btn_4" Click="btn_4_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="1" Grid.Row="3" Content="5" Name="btn_5" Click="btn_5_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="3" Content="6" Name="btn_6" Click="btn_6_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="3" Content="-" Name="btnSub" Click="btnSub_Click"/>
 
             <!--Sixth line of buttons-->
-            <Button Grid.Column="0" Grid.Row="4" Content="1"/>
-            <Button Grid.Column="1" Grid.Row="4" Content="2"/>
-            <Button Grid.Column="2" Grid.Row="4" Content="3"/>
-            <Button Grid.Column="3" Grid.Row="4" Content="+"/>
+            <Button Grid.Column="0" Grid.Row="4" Content="1" Name="btn_1" Click="btn_1_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="1" Grid.Row="4" Content="2" Name="btn_2" Click="btn_2_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="4" Content="3" Name="btn_3" Click="btn_3_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="4" Content="+" Name="btnAdd" Click="btnAdd_Click"/>
 
             <!--Seventh line of buttons-->
-            <Button Grid.Column="0" Grid.Row="5" Content="+/-"/>
-            <Button Grid.Column="1" Grid.Row="5" Content="0"/>
-            <Button Grid.Column="2" Grid.Row="5" Content="."/>
-            <Button Grid.Column="3" Grid.Row="5" Content="="/>
+            <Button Name="btnSwitchSign" Grid.Column="0" Grid.Row="5" Content="+/-" Click="btnSwitchSign_Click"/>
+            <Button Grid.Column="1" Grid.Row="5" Content="0" Name="btn_0" Click="btn_0_Click" Style="{StaticResource btnNumber}"/>
+            <Button Name="btnDot" Grid.Column="2" Grid.Row="5" Content="." Click="btnDot_Click"/>
+            <Button Name="btnResult" Grid.Column="3" Grid.Row="5" Content="=" Click="btnResult_Click"/>
         </Grid>
     </Grid>
 </Window>
