@@ -21,10 +21,12 @@ namespace Calc
     /// </summary>
     public partial class MainWindow : Window
     {
+        bool alternateButtons = false;
         public MainWindow()
         {
             InitializeComponent();
             txtEquation.Focus();
+            
         }
 
         private void btn_0_Click(object sender, RoutedEventArgs e)
@@ -102,7 +104,6 @@ namespace Calc
         private void btnSqrt_Click(object sender, RoutedEventArgs e)
         {
             string equation = txtEquation.Text;
-            double dValue = 0;
 
             if(!String.IsNullOrEmpty(equation))
             {
@@ -113,22 +114,22 @@ namespace Calc
                     return;
                 }
 
-                dValue = Convert.ToDouble(equation);
-
-                dValue = Convert.ToDouble(dValue);
-
-                if(dValue >= 1)
-                {
-                    dValue = MathFunctions.Sqrt(dValue);
-                    txtEquation.Text = dValue.ToString();
+                if(!alternateButtons)
+                { 
+                    equation = "sqrt(" + equation + ")";
                 }
+                else
+                {
+                    equation = "1 / " + equation;
+                }
+
+                txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
             }
         }
 
         private void btnPowerOfTwo_Click(object sender, RoutedEventArgs e)
         {
             string equation = txtEquation.Text;
-            double dValue = 0;
 
             if (!String.IsNullOrEmpty(equation))
             {
@@ -139,9 +140,16 @@ namespace Calc
                     return;
                 }
 
-                dValue = Convert.ToDouble(equation);
+                if(!alternateButtons)
+                { 
+                    equation = equation + "^ 2";
+                }
+                else
+                {
+                    equation = equation + "^ 3";
+                }
 
-                txtEquation.Text = MathFunctions.PowerOfTwo(dValue).ToString();
+                txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
             }
         }
 
@@ -163,7 +171,8 @@ namespace Calc
 
                 if(dValue > 0)
                 {
-                    dValue = MathFunctions.OneDividedByN(dValue);
+                    equation = "1 / " + equation;
+                    dValue = MathFunctions.ProcessResult(equation);
                     txtEquation.Text = dValue.ToString();
                 }
             }
@@ -177,6 +186,7 @@ namespace Calc
         private void btnClear_Click(object sender, RoutedEventArgs e)
         {
             MathFunctions.ClearResult();
+            txtEquation.Text = "";
         }
 
         private void btnErase_Click(object sender, RoutedEventArgs e)
@@ -208,11 +218,15 @@ namespace Calc
 
         private void btnSwitchSign_Click(object sender, RoutedEventArgs e)
         {
-            string value = txtEquation.Text;
-            double dValue = Convert.ToDouble(value);
-            dValue *= -1;
+            string equation = txtEquation.Text;
+            double dValue = 0;
 
-            txtEquation.Text = dValue.ToString();
+            if (!String.IsNullOrEmpty(equation))
+            {
+                dValue = -MathFunctions.ProcessResult(equation);
+
+                txtEquation.Text = dValue.ToString();
+            }
         }
 
         private void btnDot_Click(object sender, RoutedEventArgs e)
@@ -278,13 +292,18 @@ namespace Calc
         {
             string equation = txtEquation.Text;
 
-            if(!String.IsNullOrEmpty(equation))
+            if (!String.IsNullOrEmpty(equation))
             {
-                if(!Char.IsNumber(equation.Last()))
+                if (equation.Contains("÷"))
                 {
-                    equation = equation.Substring(0, equation.Length - 1);
+                    equation = equation.Replace("÷", "/");
                 }
 
+                if(equation.Contains("yroot"))
+                {
+                    string[] split = equation.Replace("yroot", " ").Split(' ') ;
+                    equation = split.First() + "^ (1 / " + split.Last() + ")";
+                }
 
                 txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
             }
@@ -388,14 +407,479 @@ namespace Calc
 
         private void txtEquation_KeyUp(object sender, KeyEventArgs e)
         {
+            String equation = txtEquation.Text;
+
             if (e.Key == Key.Enter)
             {
-                if (!String.IsNullOrEmpty(txtEquation.Text))
+
+                if (!String.IsNullOrEmpty(equation))
                 {
-                    txtEquation.Text = MathFunctions.ProcessResult(txtEquation.Text).ToString();
+                    if (equation.Contains("÷"))
+                    {
+                        equation = equation.Replace("÷", "/");
+                    }
+
+                    txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
                     return;
                 }
             }
+        }
+
+        private void btnMemStore_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double dValue = 0;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                string[] splits = equation.Split(new char[] { '+', '-', '*', '÷' });
+
+                if (splits.Length > 1)
+                {
+                    return;
+                }
+
+                dValue = Convert.ToDouble(equation);
+
+                MathFunctions.Mem = dValue;
+
+                btnMemClear.IsEnabled = true;
+                btnMemRecover.IsEnabled = true;
+              
+            }
+        }
+
+        private void btnMemSub_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double dValue = 0;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                string[] splits = equation.Split(new char[] { '+', '-', '*', '÷' });
+
+                if (splits.Length > 1)
+                {
+                    return;
+                }
+
+                dValue = Convert.ToDouble(equation);
+
+                MathFunctions.SubFromMem(dValue);
+            }
+        }
+
+        private void btnMemAdd_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double dValue = 0;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                string[] splits = equation.Split(new char[] { '+', '-', '*', '÷' });
+
+                if (splits.Length > 1)
+                {
+                    return;
+                }
+
+                dValue = Convert.ToDouble(equation);
+
+                MathFunctions.AddToMem(dValue);              
+            }
+        }
+
+        private void btnMemRecover_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            if(String.IsNullOrEmpty(equation))
+            {
+                equation += MathFunctions.Mem;
+
+                txtEquation.Text = equation;
+            }
+            else
+            {
+                if(!Char.IsNumber(equation.Last()))
+                {
+                    equation += MathFunctions.Mem.ToString();
+
+                    txtEquation.Text = equation;
+                }
+            }
+        }
+
+        private void btnMemClear_Click(object sender, RoutedEventArgs e)
+        {
+            MathFunctions.MemClear();
+
+            btnMemClear.IsEnabled = false;
+            btnMemRecover.IsEnabled = false;
+        }
+
+        private void btnXRaisedToY_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            if(!String.IsNullOrEmpty(equation))
+            {
+                if(Char.IsNumber(equation.Last()))
+                {
+                    equation = MathFunctions.ProcessResult(equation).ToString();
+
+                    if (!alternateButtons)
+                    {
+                        equation += "^";
+                    }
+                    else
+                    {
+                        equation += " yroot ";
+                    }
+                    txtEquation.Text = equation;                   
+                }
+            }
+        }
+
+        private void btnSin_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if(!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                if (!alternateButtons)
+                {
+                    value = value * (Math.PI / 180);
+                }
+
+                if(value != 0)
+                {
+                    if(!alternateButtons)
+                    { 
+                        equation = "sin(" + value + ")";
+                    }
+                    else
+                    {
+                        equation = "asin(" + value + ")";                   
+                    }
+
+                    value = MathFunctions.ProcessResult(equation);
+                    if(alternateButtons)
+                    { 
+                        value = value * (180 / Math.PI);
+                    }
+
+                    txtEquation.Text = value.ToString();
+                }
+            }
+
+            
+        }
+
+        private void btnCos_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                if (!alternateButtons)
+                {
+                    value = value * (Math.PI / 180);
+                }
+
+                if (value != 0)
+                {
+                    if (!alternateButtons)
+                    {
+                        equation = "cos(" + value + ")";
+                    }
+                    else
+                    {
+                        equation = "acos(" + value + ")";
+                    }
+
+                    value = MathFunctions.ProcessResult(equation);
+                    if (alternateButtons)
+                    {
+                        value = value * (180 / Math.PI);
+                    }
+
+                    txtEquation.Text = value.ToString();
+                }
+            }
+
+        }
+
+        private void btnTan_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                if (!alternateButtons)
+                {
+                    value = value * (Math.PI / 180);
+                }
+
+                if (value != 0)
+                {
+                    if (!alternateButtons)
+                    {
+                        equation = "tan(" + value + ")";
+                    }
+                    else
+                    {
+                        equation = "atan(" + value + ")";
+                    }
+
+                    value = MathFunctions.ProcessResult(equation);
+                    if (alternateButtons)
+                    {
+                        value = value * (180 / Math.PI);
+                    }
+
+                    txtEquation.Text = value.ToString();
+                }
+            }
+
+        }
+
+        private void btnTenPowerOfX_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+                
+                if (value != 0)
+                {
+                    if(!alternateButtons)
+                    { 
+                        equation = "10 ^" + value;
+                    }
+                    else
+                    {
+                        equation = "e ^" + value;
+                    }
+                    txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
+                }
+            }
+        }
+
+        private void btnLog_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                if (value != 0)
+                {
+                    if(!alternateButtons)
+                    { 
+                        equation = "log10(" + value + ")";
+                    }
+                    else
+                    {
+                        equation = "ln(" + value + ")";
+                    }
+                    txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
+                }
+            }
+        }
+
+        private void btnExp_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                if (!alternateButtons) { 
+                    if (value != 0)
+                    {
+                        equation = "exp(" + value + ")";
+
+                        txtEquation.Text = MathFunctions.ProcessResult(equation).ToString();
+                    }
+                }
+                else
+                {
+                    txtEquation.Text = MathFunctions.DMS(equation);
+                }
+            }
+        }
+
+        private void btnMod_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            if (!String.IsNullOrEmpty(equation))
+            {
+                if (!alternateButtons) { 
+                   if(Char.IsNumber(equation.Last()))
+                    {
+                        equation += " # ";
+                        txtEquation.Text = equation;
+                    }
+                }
+                else
+                {
+                    txtEquation.Text = MathFunctions.DEG(equation);
+                }
+            }
+        }
+
+        private void btnPI_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            if(String.IsNullOrEmpty(equation))
+            {
+                equation = Math.PI.ToString();
+                txtEquation.Text = equation;
+            }
+            else
+            {
+                if (!Char.IsNumber(equation.Last()))
+                {
+                    equation += Math.PI;
+                    txtEquation.Text = equation;
+                }
+            }
+        }
+
+        private void btnFactorial_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+            double value;
+
+            if(!String.IsNullOrEmpty(equation))
+            {
+                value = MathFunctions.ProcessResult(equation);
+
+                equation = value + "!";
+                value = MathFunctions.ProcessResult(equation);
+
+                txtEquation.Text = value.ToString();
+            }
+        }
+
+        private void btnOpeningParenthesis_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            equation += "(";
+
+            txtEquation.Text = equation;
+        }
+
+        private void btnClosingParenthesis_Click(object sender, RoutedEventArgs e)
+        {
+            string equation = txtEquation.Text;
+
+            equation += ")";
+
+            txtEquation.Text = equation;
+        }
+
+        private void btnAlternateButtons_Click(object sender, RoutedEventArgs e)
+        {
+            alternateButtons = !alternateButtons;
+
+            if(alternateButtons)
+            {
+                btnPowerOfTwoMainView.Visibility = Visibility.Hidden;
+                btnPowerOfTwoAlternateView.Visibility = Visibility.Visible;
+
+                btnXRaisedToYMainView.Visibility = Visibility.Hidden;
+                btnXRaisedToYAlternateView.Visibility = Visibility.Visible;
+
+                btnSinMainView.Visibility = Visibility.Hidden;
+                btnSinAlternateView.Visibility = Visibility.Visible;
+
+                btnCosMainView.Visibility = Visibility.Hidden;
+                btnCosAlternateView.Visibility = Visibility.Visible;
+
+                btnTanMainView.Visibility = Visibility.Hidden;
+                btnTanAlternateView.Visibility = Visibility.Visible;
+
+                btnSqrtMainView.Visibility = Visibility.Hidden;
+                btnSqrtAlternateView.Visibility = Visibility.Visible;
+
+                btnTenPowerOfXMainView.Visibility = Visibility.Hidden;
+                btnTenPowerOfXAlternateView.Visibility = Visibility.Visible;
+
+                btnLogMainView.Visibility = Visibility.Hidden;
+                btnLogAlternateView.Visibility = Visibility.Visible;
+
+                btnExpMainView.Visibility = Visibility.Hidden;
+                btnExpAlternateView.Visibility = Visibility.Visible;
+
+                btnModMainView.Visibility = Visibility.Hidden;
+                btnModAlternateView.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                btnPowerOfTwoMainView.Visibility = Visibility.Visible;
+                btnPowerOfTwoAlternateView.Visibility = Visibility.Hidden;
+
+                btnXRaisedToYMainView.Visibility = Visibility.Visible;
+                btnXRaisedToYAlternateView.Visibility = Visibility.Hidden;
+
+                btnSinMainView.Visibility = Visibility.Visible;
+                btnSinAlternateView.Visibility = Visibility.Hidden;
+
+                btnCosMainView.Visibility = Visibility.Visible;
+                btnCosAlternateView.Visibility = Visibility.Hidden;
+
+                btnTanMainView.Visibility = Visibility.Visible;
+                btnTanAlternateView.Visibility = Visibility.Hidden;
+
+                btnSqrtMainView.Visibility = Visibility.Visible;
+                btnSqrtAlternateView.Visibility = Visibility.Hidden;
+
+                btnTenPowerOfXMainView.Visibility = Visibility.Visible;
+                btnTenPowerOfXAlternateView.Visibility = Visibility.Hidden;
+
+                btnLogMainView.Visibility = Visibility.Visible;
+                btnLogAlternateView.Visibility = Visibility.Hidden;
+
+                btnExpMainView.Visibility = Visibility.Visible;
+                btnExpAlternateView.Visibility = Visibility.Hidden;
+
+                btnModMainView.Visibility = Visibility.Visible;
+                btnModAlternateView.Visibility = Visibility.Hidden;
+            }
+        }
+
+        private void menuDefault_Click(object sender, RoutedEventArgs e)
+        {
+            defaultCalcGrid.Visibility = Visibility.Visible;
+            scientificCalcGrid.Visibility = Visibility.Hidden;
+            txtEquation.Text = "";
+        }
+
+        private void menuScientific_Click(object sender, RoutedEventArgs e)
+        {
+            defaultCalcGrid.Visibility = Visibility.Hidden;
+            scientificCalcGrid.Visibility = Visibility.Visible;
+            txtEquation.Text = "";
         }
     }
 }

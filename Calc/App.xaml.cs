@@ -13,5 +13,9 @@ namespace Calc
     /// </summary>
     public partial class App : Application
     {
+        App()
+        {
+            System.Threading.Thread.CurrentThread.CurrentUICulture = System.Globalization.CultureInfo.CurrentCulture;
+        }
     }
 }

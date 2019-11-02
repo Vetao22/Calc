@@ -2,7 +2,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+
+using org.mariuszgromada.math.mxparser;
 
 namespace Calc
 {
@@ -10,51 +13,7 @@ namespace Calc
     {
 
         static double mem = 0, lastResult = 0;
-        static string[] possibleOperations = { "+", "-", "*", "÷" };
-        
-        /// <summary>
-        /// Add a to b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static double Add(double a, double b)
-        {
-            return a + b;
-        }
-
-        /// <summary>
-        /// Subtract a from b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static double Sub(double a, double b)
-        {
-            return a - b;
-        }
-
-        /// <summary>
-        /// Multiply a by b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static double Multiply(double a, double b)
-        {
-            return a * b;
-        }
-
-        /// <summary>
-        /// Divide a by b
-        /// </summary>
-        /// <param name="a"></param>
-        /// <param name="b"></param>
-        /// <returns></returns>
-        public static double Divide(double a, double b)
-        {
-            return a / b;
-        }
+ 
 
         /// <summary>
         /// Return the percent to be userd base on 'N'
@@ -64,48 +23,6 @@ namespace Calc
         public static double Percent(double n)
         {
             return n / 100;
-        }
-
-        /// <summary>
-        /// Return the Square Root of 'N'
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public static double Sqrt(double n)
-        {
-            if(n > 0)
-            {
-                return Math.Sqrt(n);
-            }
-            return 0;
-        }
-
-        /// <summary>
-        /// Return 'N' raised to the power of 2
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public static double PowerOfTwo(double n)
-        {
-            if(n > 0)
-            {
-                return Math.Pow(n, 2);
-            }
-            return 0;
-        }
-
-        /// <summary>
-        /// Divide '1' by 'n'
-        /// </summary>
-        /// <param name="n"></param>
-        /// <returns></returns>
-        public static double OneDividedByN(double n)
-        {
-            if(n > 0)
-            {
-                return Divide(1, n);
-            }
-            return 0;
         }
 
         /// <summary>
@@ -121,24 +38,24 @@ namespace Calc
         /// Add 'N' to the memory value
         /// </summary>
         /// <param name="n"></param>
-        public void AddToMem(double n)
+        public static void AddToMem(double n)
         {
-            Add(Mem, n);
+            Mem = ProcessResult(Mem + "+" + n);
         }
 
         /// <summary>
         /// Subtract 'N' from the memory value
         /// </summary>
         /// <param name="n"></param>
-        public void SubFromMem(double n)
+        public static void SubFromMem(double n)
         {
-            Sub(Mem, n);
+            Mem = ProcessResult(Mem + "-" + n);
         }
 
         /// <summary>
         /// Clear the memory value
         /// </summary>
-        public void MemClear()
+        public static void MemClear()
         {
             Mem = 0;
         }
@@ -151,58 +68,74 @@ namespace Calc
 
         public static double ProcessResult(string equation)
         {
-            List<char> ops = new List<char>();
-            string[] splits;
-            double tempRes = 0, value;
+            Expression exp = new Expression(equation);
+            
 
-            //Get the operations to execute
-            foreach(string op in possibleOperations)
-            {
-                for(int x = 0; x < equation.Length; x++)
-                {
-                    if(equation.ElementAt(x) == op.First())
-                    {
-                        ops.Add(op.First());
-                    }
-                }
-            }
-
-            //Separate the numbers
-            splits = equation.Split(ops.ToArray());
-
-            value = Convert.ToDouble(splits.First());            
-
-            //Set the first value to initiate the calculation
-            tempRes = value;
-
-            for(int x = 0; x < ops.Count; x++)
-            {
-                value = Convert.ToDouble(splits[x + 1]);
-
-                char op = ops[x];
-
-                switch(op)
-                {
-                    case '+':
-                        tempRes = Add(tempRes, value);
-                        break;
-
-                    case '-':
-                        tempRes = Sub(tempRes, value);
-                        break;
-
-                    case '*':
-                        tempRes = Multiply(tempRes, value);
-                        break;
-
-                    case '÷':
-                        tempRes = Divide(tempRes, value);
-                        break;
-                }
-
-            }
-
-            return lastResult = tempRes;
+            return lastResult = exp.calculate();
         }
+
+        /// <summary>
+        /// Convert a decimal-degree angle to DMS
+        /// </summary>
+        /// <param name="deg"></param>
+        /// <returns></returns>
+        public static string DMS(string deg)
+        {
+            string result;
+            try
+            {
+                decimal decimalNumber = Convert.ToDecimal(deg);
+                decimal degrees, minutes, seconds;
+
+                degrees = Convert.ToInt32(Math.Truncate(decimalNumber));
+                minutes = Convert.ToInt32(Math.Truncate((decimalNumber - degrees) * 60));
+                seconds = (((decimalNumber - degrees) * 60) - minutes) * 60;
+                result = degrees + "." + minutes.ToString() + "" + (seconds).ToString();
+            }
+            catch
+            {
+                result = "NaN";
+            }
+
+            return result;
+        }
+
+
+        /// <summary>
+        /// Convert DMS angle to decimal-degree
+        /// </summary>
+        /// <param name="dms"></param>
+        /// <returns></returns>
+        public static string DEG(string dms)
+        {
+            string result;
+
+            try
+            {
+                // angle or bearing in degrees, minutes and seconds
+                double angle = Convert.ToDouble(dms);
+
+                //degrees, minutes and seconds
+                double degminsec = angle;
+                // decimal seconds
+                double decsec = (degminsec * 100 - Math.Truncate(degminsec * 100)) / .6;
+                //degrees and minutes
+                double degmin = (Math.Truncate(degminsec * 100) + decsec) / 100;
+                //degrees
+                double deg = Math.Truncate(degmin);
+                //decimal degrees
+                double decdeg = deg + (degmin - deg) / .6;
+
+                result = decdeg.ToString();
+            }
+            catch
+            {
+                result = "NaN";
+            }
+
+            return result;
+        }
+
+    
     }
 }

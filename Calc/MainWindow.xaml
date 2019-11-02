@@ -3,39 +3,59 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:system="clr-namespace:System;assembly=mscorlib"
         xmlns:local="clr-namespace:Calc"
+        xmlns:p = "clr-namespace:Calc.Properties"
         mc:Ignorable="d"
         Title="MainWindow" Height="451.5" Width="363" Visibility="Visible" WindowStartupLocation="CenterScreen"
         FontSize="15" FontWeight="Bold">
 
     <Window.Resources>
         <Style x:Key="btnNumber" TargetType="Button">
-            <Setter Property="Background" Value="AntiqueWhite"/>
+            <Setter Property="Background" Value="#FFDAEFF1"/>
         </Style>
+        <Style x:Key="btnBasicFunctions" TargetType="Button">
+            <Setter Property="Background" Value="#FFF3E9C0"/>
+        </Style>
+        <Style x:Key="btnClearButtons" TargetType="Button">
+            <Setter Property="Background" Value="#FFE6F0A6"/>
+        </Style>
+        <Style x:Key="btnSpecialButtons" TargetType="Button">
+            <Setter Property="Background" Value="#FFADECBE"/>
+        </Style>
+        <Style x:Key="btnMemButtons" TargetType="Button">
+            <Setter Property="Background" Value="#FF91C2D8"/>
+        </Style>
+
     </Window.Resources>
-    
-    <Grid Height="auto">
+
+    <Grid Height="auto" Name="mainGrid">
         <Grid.RowDefinitions>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="auto"/>
             <RowDefinition Height="*"/>
-
         </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+            <ColumnDefinition Width="*"/>
+        </Grid.ColumnDefinitions>
 
         <!--Menu Grid, defining sub menus to choose what type of calculator to use.-->
         <Menu Grid.Row="0" Background="{x:Null}">
             <Menu.Items>
-                <MenuItem Header="Type">
-                    <MenuItem Header="Default"/>
-                    <MenuItem Header="Scientific"/>
+                <MenuItem Header="{x:Static p:Resources.menuType}">
+                    <MenuItem Name="menuDefault" Header="{x:Static p:Resources.menuDefault}" Click="menuDefault_Click" />
+                    <MenuItem Name="menuScientific" Header="{x:Static p:Resources.menuScientific}" Click="menuScientific_Click"/>
                 </MenuItem>
             </Menu.Items>
         </Menu>
-        
+
         <!---->
-        <TextBox Grid.Row="1" Width="auto" Margin="5" MinHeight="20" Name="txtEquation" PreviewTextInput="txtEquation_PreviewTextInput" 
-                 PreviewLostKeyboardFocus="txtEquation_PreviewLostKeyboardFocus"
+        <TextBox Grid.Row="1" Grid.ColumnSpan="4" Width="auto" Margin="5" MinHeight="20" Name="txtEquation" 
+                 PreviewTextInput="txtEquation_PreviewTextInput" PreviewLostKeyboardFocus="txtEquation_PreviewLostKeyboardFocus"
                  KeyUp="txtEquation_KeyUp">
             <TextBox.Template>
                 <ControlTemplate>
@@ -47,31 +67,21 @@
                 </ControlTemplate>
             </TextBox.Template>
         </TextBox>
-      
+
         <!--First line of buttons, including memory function.-->
-        <Grid Grid.Row="2" Margin="4">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
+        <Button Grid.Column="0" Grid.Row="2" Content="MC" Margin="2, 3" IsEnabled="False" Name="btnMemClear" Click="btnMemClear_Click"
+                    Style="{StaticResource btnMemButtons}"/>
+        <Button Grid.Column="1" Grid.Row="2" Content="MR" Margin="2, 3" IsEnabled="False" Name="btnMemRecover" Click="btnMemRecover_Click"
+                    Style="{StaticResource btnMemButtons}"/>
+        <Button Grid.Column="2" Grid.Row="2" Content="M+" Margin="2, 3" Name="btnMemAdd" Click="btnMemAdd_Click"
+                    Style="{StaticResource btnMemButtons}"/>
+        <Button Grid.Column="3" Grid.Row="2" Content="M-" Margin="2, 3" Name="btnMemSub" Click="btnMemSub_Click"
+                    Style="{StaticResource btnMemButtons}"/>
+        <Button Grid.Column="4" Grid.Row="2" Content="MS" Margin="2, 3" Name="btnMemStore" Click="btnMemStore_Click"
+                    Style="{StaticResource btnMemButtons}"/>
+        
+        <Grid Name="defaultCalcGrid" Grid.Row="3" Grid.ColumnSpan="4" Visibility="Visible">
 
-            <Button Grid.Column="0" Content="MC" Margin="2, 3" IsEnabled="False"/>
-            <Button Grid.Column="1" Content="MR" Margin="2, 3" IsEnabled="False"/>
-            <Button Grid.Column="2" Content="M+" Margin="2, 3"/>
-            <Button Grid.Column="3" Content="M-" Margin="2, 3"/>
-            <Button Grid.Column="4" Content="MS" Margin="2, 3"/>
-        </Grid>
-
-        <Grid Grid.Row="3">
-            <Grid.ColumnDefinitions>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-                <ColumnDefinition Width="*"/>
-            </Grid.ColumnDefinitions>
             <Grid.RowDefinitions>
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
@@ -80,17 +90,26 @@
                 <RowDefinition Height="*"/>
                 <RowDefinition Height="*"/>
             </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
 
             <!--Second line of buttons-->
-            <Button Name="btnPercent" Grid.Column="0" Grid.Row="0" Content="%" Click="btnPercent_Click" />
-            <Button  Name="btnSqrt" Grid.Column="1" Grid.Row="0" Click="btnSqrt_Click">
+            <Button Name="btnPercent" Grid.Column="0" Grid.Row="0" Content="%" Click="btnPercent_Click"
+                    Style="{StaticResource btnSpecialButtons}"/>
+            <Button  Name="btnSqrt" Grid.Column="1" Grid.Row="0" Click="btnSqrt_Click" Style="{StaticResource btnSpecialButtons}">
                 <Grid>
                     <TextBlock Text="‾‾" Margin="10 0 0 0"/>
                     <TextBlock Text="²√x"/>
                 </Grid>
             </Button>
-            <Button Name="btnPowerOfTwo" Grid.Column="2" Grid.Row="0" Content="X²" Click="btnPowerOfTwo_Click" />
-            <Button Name="btnOneDivideByX" Grid.Column="3" Grid.Row="0" Click="btnOneDivideByX_Click">
+            <Button Name="btnPowerOfTwo" Grid.Column="2" Grid.Row="0" Content="X²" Click="btnPowerOfTwo_Click"
+                    Style="{StaticResource btnSpecialButtons}"/>
+            <Button Name="btnOneDivideByX" Grid.Column="3" Grid.Row="0" Click="btnOneDivideByX_Click"
+                    Style="{StaticResource btnSpecialButtons}">
                 <Grid>
                     <TextBlock Text="1" Margin="-5 -3 0 0"/>
                     <TextBlock Text="/"/>
@@ -99,33 +118,252 @@
             </Button>
 
             <!--Third line of buttons-->
-            <Button Name="btnClearEntry" Grid.Column="0" Grid.Row="1" Content="CE" Click="btnClearEntry_Click"/>
-            <Button Name="btnClear" Grid.Column="1" Grid.Row="1" Content="C" Click="btnClear_Click" />
-            <Button Name="btnErase" Grid.Column="2" Grid.Row="1" Content="⌫" Click="btnErase_Click"/>
-            <Button Name="btnDivide" Grid.Column="3" Grid.Row="1" Content="÷" Click="btnDivide_Click"/>
+            <Button Name="btnClearEntry" Grid.Column="0" Grid.Row="1" Content="CE" Click="btnClearEntry_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Name="btnClear" Grid.Column="1" Grid.Row="1" Content="C" Click="btnClear_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Name="btnErase" Grid.Column="2" Grid.Row="1" Content="⌫" Click="btnErase_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Name="btnDivide" Grid.Column="3" Grid.Row="1" Content="÷" Click="btnDivide_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
             <!--Fourth line of buttons-->
             <Button Grid.Column="0" Grid.Row="2" Content="7" Name="btn_7" Click="btn_7_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="1" Grid.Row="2" Content="8" Name="btn_8" Click="btn_8_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="2" Grid.Row="2" Content="9" Name="btn_9" Click="btn_9_Click" Style="{StaticResource btnNumber}"/>
-            <Button Grid.Column="3" Grid.Row="2" Content="X" Name="btnMultiply" Click="btnMultiply_Click"/>
+            <Button Grid.Column="3" Grid.Row="2" Content="X" Name="btnMultiply" Click="btnMultiply_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
 
             <!--Fifth line of buttons-->
             <Button Grid.Column="0" Grid.Row="3" Content="4" Name="btn_4" Click="btn_4_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="1" Grid.Row="3" Content="5" Name="btn_5" Click="btn_5_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="2" Grid.Row="3" Content="6" Name="btn_6" Click="btn_6_Click" Style="{StaticResource btnNumber}"/>
-            <Button Grid.Column="3" Grid.Row="3" Content="-" Name="btnSub" Click="btnSub_Click"/>
+            <Button Grid.Column="3" Grid.Row="3" Content="-" Name="btnSub" Click="btnSub_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
 
             <!--Sixth line of buttons-->
             <Button Grid.Column="0" Grid.Row="4" Content="1" Name="btn_1" Click="btn_1_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="1" Grid.Row="4" Content="2" Name="btn_2" Click="btn_2_Click" Style="{StaticResource btnNumber}"/>
             <Button Grid.Column="2" Grid.Row="4" Content="3" Name="btn_3" Click="btn_3_Click" Style="{StaticResource btnNumber}"/>
-            <Button Grid.Column="3" Grid.Row="4" Content="+" Name="btnAdd" Click="btnAdd_Click"/>
+            <Button Grid.Column="3" Grid.Row="4" Content="+" Name="btnAdd" Click="btnAdd_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
 
             <!--Seventh line of buttons-->
-            <Button Name="btnSwitchSign" Grid.Column="0" Grid.Row="5" Content="+/-" Click="btnSwitchSign_Click"/>
+            <Button Name="btnSwitchSign" Grid.Column="0" Grid.Row="5" Content="+/-" Click="btnSwitchSign_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
             <Button Grid.Column="1" Grid.Row="5" Content="0" Name="btn_0" Click="btn_0_Click" Style="{StaticResource btnNumber}"/>
-            <Button Name="btnDot" Grid.Column="2" Grid.Row="5" Content="." Click="btnDot_Click"/>
+            <Button Name="btnDot" Grid.Column="2" Grid.Row="5" Content="." Click="btnDot_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
             <Button Name="btnResult" Grid.Column="3" Grid.Row="5" Content="=" Click="btnResult_Click"/>
+        </Grid>
+
+        <Grid Name="scientificCalcGrid" Grid.Row="3" Grid.ColumnSpan="4" Visibility="Hidden">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+                <RowDefinition Height="*"/>
+            </Grid.RowDefinitions>
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+                <ColumnDefinition Width="*"/>
+            </Grid.ColumnDefinitions>
+
+            <!--First line of buttons-->
+            <Button Grid.Column="0" Grid.Row="0" Click="btnPowerOfTwo_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnPowerOfTwoMainView">
+                        <TextBlock Text="X²"/>
+                    </Grid>
+                    <Grid Name="btnPowerOfTwoAlternateView" Visibility="Hidden">
+                        <TextBlock Text="X³"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnXRaisedToY" Grid.Column="1" Grid.Row="0" Click="btnXRaisedToY_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnXRaisedToYMainView" Margin="0 5 0 0" Visibility="Visible">
+                        <TextBlock Text="y" Margin="10 -15 0 0"/>
+                        <TextBlock Text="X"/>
+                    </Grid>
+                    <Grid Name="btnXRaisedToYAlternateView"  Visibility="Hidden">
+                        <TextBlock Text="‾‾" Margin="10 0 0 0"/>
+                        <TextBlock Text="y" FontSize="10" Margin=" -4 0 0 0"/>
+                        <TextBlock Text="√x"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnSin" Grid.Column="2" Grid.Row="0" Click="btnSin_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnSinMainView" Visibility="Visible">
+                        <TextBlock Text="SIN"/>
+                    </Grid>
+                    <Grid Name="btnSinAlternateView" Visibility="Hidden">
+                        <TextBlock Text="sin"/>
+                        <TextBlock Text="-1" FontSize="8" Margin="20 0 0 0"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnCos" Grid.Column="3" Grid.Row="0" Click="btnCos_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnCosMainView" Visibility="Visible">
+                        <TextBlock Text="COS"/>
+                    </Grid>
+                    <Grid Name="btnCosAlternateView" Visibility="Hidden">
+                        <TextBlock Text="cos"/>
+                        <TextBlock Text="-1" FontSize="8" Margin="20 0 0 0"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnTan" Grid.Column="4" Grid.Row="0" Click="btnTan_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnTanMainView" Visibility="Visible">
+                        <TextBlock Text="TAN"/>
+                    </Grid>
+                    <Grid Name="btnTanAlternateView" Visibility="Hidden">
+                        <TextBlock Text="tan"/>
+                        <TextBlock Text="-1" FontSize="8" Margin="20 0 0 0"/>
+                    </Grid>
+                </Grid>
+
+            </Button>
+
+            <!--Second line of buttons-->
+            <Button Grid.Column="0" Grid.Row="1" Click="btnSqrt_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnSqrtMainView">
+                        <TextBlock Text="‾‾" Margin="10 0 0 0"/>
+                        <TextBlock Text="²√x"/>
+                    </Grid>
+                    <Grid Name="btnSqrtAlternateView" Visibility="Hidden" Margin="3 0 0 0">
+                        <TextBlock Text="1" Margin="-5 -3 0 0"/>
+                        <TextBlock Text="/"/>
+                        <TextBlock Text="X" Margin="3 5 0 0"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnTenPowerOfX" Grid.Column="1" Grid.Row="1" Click="btnTenPowerOfX_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnTenPowerOfXMainView" Margin="0 5 0 0">
+                        <TextBlock Text="x" Margin="18 -5 0 0"/>
+                        <TextBlock Text="10"/>
+                    </Grid>
+                    <Grid Name="btnTenPowerOfXAlternateView" Margin="3 5 0 0" Visibility="Hidden">
+                        <TextBlock Text="x" Margin="9 -5 0 0"/>
+                        <TextBlock Text="e"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnLog" Grid.Column="2" Grid.Row="1" Click="btnLog_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnLogMainView">
+                        <TextBlock Text="LOG"/>
+                    </Grid>
+                    <Grid Name="btnLogAlternateView" HorizontalAlignment="Center" Visibility="Hidden">
+                        <TextBlock Text="ln"/>
+                    </Grid>
+                </Grid>
+            </Button>
+            <Button Name="btnExp" Grid.Column="3" Grid.Row="1" Click="btnExp_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnExpMainView">
+                        <TextBlock Text="EXP"/>
+                    </Grid>
+                    <Grid Name="btnExpAlternateView" HorizontalAlignment="Center" Visibility="Hidden">
+                        <TextBlock Text="dms"/>
+                    </Grid>
+                </Grid>
+            </Button>
+
+            <Button Name="btnMod" Grid.Column="4" Grid.Row="1" Click="btnMod_Click"
+                    Style="{StaticResource btnSpecialButtons}">
+                <Grid>
+                    <Grid Name="btnModMainView">
+                        <TextBlock Text="MOD"/>
+                    </Grid>
+                    <Grid Name="btnModAlternateView" HorizontalAlignment="Center" Visibility="Hidden">
+                        <TextBlock Text="deg"/>
+                    </Grid>
+                </Grid>
+            </Button>
+            
+            <!--Third line of buttons-->
+            <Button Name="btnAlternateButtons" Grid.Column="0" Grid.Row="2" Click="btnAlternateButtons_Click"
+                    Style="{StaticResource btnSpecialButtons}">            
+                <Grid Margin="0 5 0 0">
+                    <TextBlock Text="nd" Margin="10 -3 0 0" FontSize="12"/>
+                    <TextBlock Text="2"/>
+                </Grid>
+            </Button>
+
+            <Button Grid.Column="1" Grid.Row="2" Content="CE" Click="btnClearEntry_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Grid.Column="2" Grid.Row="2" Content="C" Click="btnClear_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Grid.Column="3" Grid.Row="2" Content="⌫" Click="btnErase_Click"
+                    Style="{StaticResource btnClearButtons}"/>
+            <Button Grid.Column="4" Grid.Row="2" Content="÷" Click="btnDivide_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            
+            <!--Fourth line of buttons-->
+            <Button Name="btnPI" Grid.Column="0" Grid.Row="3" Content="π" Click="btnPI_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+
+            <Button Grid.Column="1" Grid.Row="3" Content="7" Click="btn_7_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="3" Content="8" Click="btn_8_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="3" Content="9" Click="btn_9_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="4" Grid.Row="3" Content="X" Click="btnMultiply_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            
+            <!--Fifth line of buttons-->
+            <Button Name="btnFactorial" Grid.Column="0" Grid.Row="4" Content="n!" Click="btnFactorial_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+
+            <Button Grid.Column="1" Grid.Row="4" Content="4" Click="btn_4_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="4" Content="5" Click="btn_5_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="4" Content="6" Click="btn_6_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="4" Grid.Row="4" Content="-" Click="btnSub_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            
+            <!--Eight line of buttons-->
+            <Button Grid.Column="0" Grid.Row="5" Content="+/-" Click="btnSwitchSign_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            
+            <Button Grid.Column="1" Grid.Row="5" Content="1" Click="btn_1_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="2" Grid.Row="5" Content="2" Click="btn_2_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="5" Content="3" Click="btn_3_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="4" Grid.Row="5" Content="+" Click="btnAdd_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            
+            <!--Nineth line of buttons-->
+            <Button Name="btnOpeningParenthesis" Grid.Column="0" Grid.Row="6" Content="(" Click="btnOpeningParenthesis_Click" 
+                    Style="{StaticResource btnBasicFunctions}"/>
+            <Button Name="btnClosingParenthesis" Grid.Column="1" Grid.Row="6" Content=")" Click="btnClosingParenthesis_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            <Button Grid.Column="2" Grid.Row="6" Content="0" Click="btn_0_Click" Style="{StaticResource btnNumber}"/>
+            <Button Grid.Column="3" Grid.Row="6" Content="." Click="btnDot_Click"
+                    Style="{StaticResource btnBasicFunctions}"/>
+            <Button Grid.Column="4" Grid.Row="6" Content="=" Click="btnResult_Click"/>
         </Grid>
     </Grid>
 </Window>
